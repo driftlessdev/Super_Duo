@@ -72,6 +72,7 @@ public class scoresAdapter extends CursorAdapter
             TextView league = (TextView) v.findViewById(R.id.league_textview);
             league.setText(Utilies.getLeague(cursor.getInt(COL_LEAGUE),context));
             Button share_button = (Button) v.findViewById(R.id.share_button);
+            share_button.setContentDescription(context.getString(R.string.cd_share_score,cursor.getString(COL_HOME),cursor.getString(COL_AWAY)));
             share_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v)

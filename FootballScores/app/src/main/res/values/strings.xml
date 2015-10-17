@@ -44,4 +44,5 @@
     <string name="group_stages_matchday_6">Group Stages, Matchday : 6</string>
     <string name="matchday_number">Matchday: <xliff:g id="day">%1$s</xliff:g></string>
     <string name="current_score"><xliff:g id="home">%1$s</xliff:g> - <xliff:g id="away">%2$s</xliff:g></string>
+    <string name="cd_share_score">Share the score of the <xliff:g id="home">%1$s</xliff:g> verse <xliff:g id="away">%2$s</xliff:g> game.</string>
 </resources>
