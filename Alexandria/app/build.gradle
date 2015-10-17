@@ -53,5 +53,6 @@ android {
 dependencies {
     compile 'commons-validator:commons-validator:1.4.0'
     compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:support-annotations:21.0.3'
     compile 'me.dm7.barcodescanner:zbar:1.8.3'
 }
