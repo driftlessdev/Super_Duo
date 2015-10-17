@@ -9,6 +9,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +18,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import hugo.weaving.DebugLog;
 import it.jaschke.alexandria.data.AlexandriaContract;
 import it.jaschke.alexandria.services.BookService;
 import it.jaschke.alexandria.services.DownloadImage;
 
 
 public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final String LOG_TAG = AddBook.class.getSimpleName();
     private static final String TAG = "INTENT_TO_SCAN_ACTIVITY";
     private EditText ean;
     private final int LOADER_ID = 1;
@@ -67,20 +70,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             @Override
             public void afterTextChanged(Editable s) {
                 String ean =s.toString();
-                //catch isbn10 numbers
-                if(ean.length()==10 && !ean.startsWith("978")){
-                    ean="978"+ean;
-                }
-                if(ean.length()<13){
-                    clearFields();
-                    return;
-                }
-                //Once we have an ISBN, start a book intent
-                Intent bookIntent = new Intent(getActivity(), BookService.class);
-                bookIntent.putExtra(BookService.EAN, ean);
-                bookIntent.setAction(BookService.FETCH_BOOK);
-                getActivity().startService(bookIntent);
-                AddBook.this.restartLoader();
+                processISBN(ean);
             }
         });
 
@@ -94,8 +84,8 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                 // are using an external app.
                 //when you're done, remove the toast below.
                 Intent intent = new Intent(getActivity(),ScannerActivity.class);
-                startActivity(intent);
-                
+                startActivityForResult(intent, ScannerActivity.SCAN_RESULT);
+
             }
         });
 
@@ -123,6 +113,40 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         }
 
         return rootView;
+    }
+
+    private void processISBN(String ean)
+    {
+        //catch isbn10 numbers
+        if(ean.length()==10 && !ean.startsWith("978")){
+            ean="978"+ean;
+        }
+        if(ean.length()<13){
+            clearFields();
+            return;
+        }
+        //Once we have an ISBN, start a book intent
+        Intent bookIntent = new Intent(getActivity(), BookService.class);
+        bookIntent.putExtra(BookService.EAN, ean);
+        bookIntent.setAction(BookService.FETCH_BOOK);
+        getActivity().startService(bookIntent);
+        AddBook.this.restartLoader();
+    }
+
+    @DebugLog
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == ScannerActivity.SCAN_RESULT)
+        {
+            if(resultCode == Activity.RESULT_OK)
+            {
+                String isbn = data.getExtras().getString(Intent.EXTRA_TEXT);
+                Log.v(LOG_TAG, "Found: " + isbn);
+                ean.setText(isbn);
+                processISBN(isbn);
+            }
+        }
     }
 
     private void restartLoader(){
