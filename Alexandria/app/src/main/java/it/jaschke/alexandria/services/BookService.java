@@ -2,8 +2,11 @@ package it.jaschke.alexandria.services;
 
 import android.app.IntentService;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -91,6 +94,12 @@ public class BookService extends IntentService {
 
         bookEntry.close();
 
+        if(!isNetworkAvailable(getApplicationContext()))
+        {
+            sendFetchMessage(getResources().getString(R.string.fetch_error_message_offline));
+            return;
+        }
+
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String bookJsonString = null;
@@ -125,11 +134,15 @@ public class BookService extends IntentService {
             }
 
             if (buffer.length() == 0) {
+                sendFetchMessage(getResources().getString(R.string.fetch_error_message_server_down));
                 return;
             }
             bookJsonString = buffer.toString();
         } catch (Exception e) {
+            sendFetchMessage(getResources().getString(R.string.fetch_error_message_known));
+            e.printStackTrace();
             Log.e(LOG_TAG, "Error ", e);
+            return;
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -162,9 +175,7 @@ public class BookService extends IntentService {
             if(bookJson.has(ITEMS)){
                 bookArray = bookJson.getJSONArray(ITEMS);
             }else{
-                Intent messageIntent = new Intent(MainActivity.MESSAGE_EVENT);
-                messageIntent.putExtra(MainActivity.MESSAGE_KEY,getResources().getString(R.string.not_found));
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(messageIntent);
+                sendFetchMessage(getResources().getString(R.string.not_found));
                 return;
             }
 
@@ -198,6 +209,7 @@ public class BookService extends IntentService {
 
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error ", e);
+            sendFetchMessage(getResources().getString(R.string.fetch_error_message_bad_data));
         }
     }
 
@@ -229,5 +241,21 @@ public class BookService extends IntentService {
             getContentResolver().insert(AlexandriaContract.CategoryEntry.CONTENT_URI, values);
             values= new ContentValues();
         }
+    }
+
+    private void sendFetchMessage(String message)
+    {
+        Intent messageIntent = new Intent(MainActivity.MESSAGE_EVENT);
+        messageIntent.putExtra(MainActivity.MESSAGE_KEY,message);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(messageIntent);
+    }
+
+    private boolean isNetworkAvailable(Context c) {
+        ConnectivityManager cm =
+                (ConnectivityManager)c.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
     }
  }
