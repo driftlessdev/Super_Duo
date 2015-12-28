@@ -14,6 +14,10 @@ import android.widget.RemoteViews;
 public class ScoresWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        for (int widgetId : appWidgetIds) {
+            RemoteViews mView = initViews(context, appWidgetManager, widgetId);
+            appWidgetManager.updateAppWidget(widgetId, mView);
+        }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 

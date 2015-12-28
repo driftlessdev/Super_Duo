@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Binder;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -41,12 +42,20 @@ public class ScoresWidgetDataProvider implements RemoteViewsService.RemoteViewsF
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date today = new Date(System.currentTimeMillis());
-        mCursor = mResolver.query(
-                DatabaseContract.scores_table.buildScoreWithDate()
-                ,null
-                ,null
-                ,new String[]{dateFormat.format(today)}
-                ,null);
+
+        // Permission issue workaround fron http://stackoverflow.com/questions/13187284/android-permission-denial-in-widget-remoteviewsfactory-for-content
+        final long token = Binder.clearCallingIdentity();
+        try{
+            mCursor = mResolver.query(
+                    DatabaseContract.scores_table.buildScoreWithDate()
+                    ,null
+                    ,null
+                    ,new String[]{dateFormat.format(today)}
+                    ,null);
+        } finally {
+            Binder.restoreCallingIdentity(token);
+        }
+
     }
 
     @Override
