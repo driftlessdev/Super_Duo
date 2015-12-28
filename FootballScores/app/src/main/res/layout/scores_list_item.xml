@@ -28,6 +28,7 @@
 
             <TextView
                 android:id="@+id/home_name"
+                android:textColor="@android:color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -44,6 +45,7 @@
 
             <TextView
                 android:id="@+id/score_textview"
+                android:textColor="@android:color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_gravity="center"
@@ -54,6 +56,7 @@
 
             <TextView
                 android:id="@+id/data_textview"
+                android:textColor="@android:color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_gravity="center"
@@ -77,6 +80,7 @@
 
             <TextView
                 android:id="@+id/away_name"
+                android:textColor="@android:color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
