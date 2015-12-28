@@ -1,0 +1,35 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:padding="6dp"
+             >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text="@string/widget_text"
+            android:textColor="@android:color/black"
+            android:layout_weight="1"
+            android:background="@color/green03"
+            android:textSize="@dimen/TeamNames"
+            android:gravity="center"/>
+
+
+        <ListView
+            android:id="@+id/scores_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="15sp"
+            android:layout_weight="4"
+            android:background="@color/green14"
+            />
+    </LinearLayout>
+
+
+</FrameLayout>
