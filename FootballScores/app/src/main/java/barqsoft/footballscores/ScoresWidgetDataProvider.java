@@ -10,6 +10,8 @@ import android.widget.RemoteViewsService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import hugo.weaving.DebugLog;
+
 /**
  * Created by Tim on 12/28/2015.
  */
@@ -55,6 +57,7 @@ public class ScoresWidgetDataProvider implements RemoteViewsService.RemoteViewsF
         }
     }
 
+    @DebugLog
     @Override
     public int getCount() {
         if(mCursor != null)
@@ -63,6 +66,7 @@ public class ScoresWidgetDataProvider implements RemoteViewsService.RemoteViewsF
             return 0;
     }
 
+    @DebugLog
     @Override
     public RemoteViews getViewAt(int position) {
         if(mCursor == null)
@@ -106,6 +110,7 @@ public class ScoresWidgetDataProvider implements RemoteViewsService.RemoteViewsF
     }
 
     @Override
+    @DebugLog
     public long getItemId(int position) {
         if(mCursor != null)
         {
