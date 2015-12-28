@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Binder;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -18,6 +18,7 @@ import hugo.weaving.DebugLog;
  */
 @SuppressLint("NewApi")
 public class ScoresWidgetDataProvider implements RemoteViewsService.RemoteViewsFactory {
+    private static final String LOG_TAG = ScoresWidgetDataProvider.class.getSimpleName();
     private Context mContext;
     private Cursor mCursor;
     private ContentResolver mResolver;
@@ -44,17 +45,12 @@ public class ScoresWidgetDataProvider implements RemoteViewsService.RemoteViewsF
         Date today = new Date(System.currentTimeMillis());
 
         // Permission issue workaround fron http://stackoverflow.com/questions/13187284/android-permission-denial-in-widget-remoteviewsfactory-for-content
-        final long token = Binder.clearCallingIdentity();
-        try{
             mCursor = mResolver.query(
                     DatabaseContract.scores_table.buildScoreWithDate()
                     ,null
                     ,null
                     ,new String[]{dateFormat.format(today)}
                     ,null);
-        } finally {
-            Binder.restoreCallingIdentity(token);
-        }
 
     }
 
@@ -83,11 +79,12 @@ public class ScoresWidgetDataProvider implements RemoteViewsService.RemoteViewsF
             return null;
         }
         mCursor.moveToPosition(position);
-
+        Log.d(LOG_TAG, "Home: " + mCursor.getString(scoresAdapter.COL_HOME));
         RemoteViews views = new RemoteViews(mContext.getPackageName(),R.layout.scores_list_item);
         views.setTextViewText(
                 R.id.home_name,
                 mCursor.getString(scoresAdapter.COL_HOME));
+        Log.d(LOG_TAG, "Away: " + mCursor.getString(scoresAdapter.COL_AWAY));
         views.setTextViewText(
                 R.id.away_name,
                 mCursor.getString(scoresAdapter.COL_AWAY));
@@ -97,6 +94,10 @@ public class ScoresWidgetDataProvider implements RemoteViewsService.RemoteViewsF
                         mCursor.getInt(scoresAdapter.COL_HOME_GOALS),
                         mCursor.getInt(scoresAdapter.COL_AWAY_GOALS),
                         mContext));
+        views.setTextViewText(
+                R.id.data_textview,
+                mCursor.getString(scoresAdapter.COL_MATCHTIME)
+        );
         views.setImageViewResource(
                 R.id.home_crest,
                 Utilies.getTeamCrestByTeamName(mCursor.getString(scoresAdapter.COL_HOME))
